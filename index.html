@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ДНЕВНИК ИГРЫ | НАЙТИ СВОИХ</title>
+    <style>
+        :root {
+            --neon-blue: #00f7ff;
+            --neon-purple: #c724f1;
+            --neon-pink: #ff2a6d;
+            --space-dark: #050510;
+            --space-light: #0a0a1a;
+            --star-glow: rgba(255, 255, 255, 0.8);
+        }
+
+        body {
+            background-color: var(--space-dark);
+            color: white;
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 0;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(199, 36, 241, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(0, 247, 255, 0.05) 0%, transparent 20%),
+                url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=1471&auto=format&fit=crop') no-repeat center/cover fixed;
+            background-blend-mode: overlay;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .star {
+            position: absolute;
+            background-color: var(--star-glow);
+            border-radius: 50%;
+            animation: twinkle 5s infinite alternate;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.2; }
+            100% { opacity: 1; }
+        }
+
+        .cyber-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid var(--neon-purple);
+            border-radius: 15px;
+            box-shadow: 
+                0 0 15px var(--neon-purple),
+                0 0 30px rgba(199, 36, 241, 0.3);
+            background-color: rgba(5, 5, 16, 0.9);
+            position: relative;
+            backdrop-filter: blur(5px);
+        }
+
+        .cyber-container::before {
+            content: "";
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border: 1px solid var(--neon-blue);
+            border-radius: 15px;
+            pointer-events: none;
+            z-index: -1;
+            animation: glitch 3s infinite alternate;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--neon-blue);
+            font-size: 2.5rem;
+            text-shadow: 0 0 10px var(--neon-blue);
+            margin-bottom: 30px;
+            letter-spacing: 3px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background-color: transparent;
+            border: 1px solid var(--neon-pink);
+            border-radius: 8px;
+            color: var(--neon-pink);
+            padding: 10px 20px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            transition: all 0.3s;
+            text-transform: uppercase;
+        }
+
+        .tab-btn:hover, .tab-btn.active {
+            background-color: var(--neon-pink);
+            color: var(--space-dark);
+            box-shadow: 0 0 15px var(--neon-pink);
+        }
+
+        .tab-content {
+            display: none;
+            border-radius: 12px;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .columns {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .column {
+            flex: 1;
+            min-width: 300px;
+            border: 1px solid var(--neon-blue);
+            border-radius: 12px;
+            padding: 20px;
+            background-color: rgba(10, 10, 26, 0.7);
+            box-shadow: 0 0 10px rgba(0, 247, 255, 0.2);
+        }
+
+        .column-title {
+            color: var(--neon-blue);
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            text-align: center;
+            text-shadow: 0 0 5px var(--neon-blue);
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--neon-purple);
+            border-radius: 8px;
+            color: white;
+            font-family: 'Courier New', monospace;
+            padding: 10px;
+            margin-bottom: 15px;
+            resize: vertical;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 10px var(--neon-blue);
+        }
+
+        button {
+            background-color: transparent;
+            border: 1px solid var(--neon-blue);
+            border-radius: 8px;
+            color: var(--neon-blue);
+            padding: 8px 20px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin-right: 10px;
+        }
+
+        button:hover {
+            background-color: var(--neon-blue);
+            color: var(--space-dark);
+            box-shadow: 0 0 15px var(--neon-blue);
+        }
+
+        .delete-btn {
+            border-color: var(--neon-pink);
+            color: var(--neon-pink);
+        }
+
+        .delete-btn:hover {
+            background-color: var(--neon-pink);
+            color: var(--space-dark);
+        }
+
+        .entries {
+            margin-top: 30px;
+        }
+
+        .entry {
+            border-left: 3px solid var(--neon-purple);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: rgba(5, 5, 16, 0.7);
+        }
+
+        .entry-date {
+            color: var(--neon-blue);
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+        }
+
+        .login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .login-box {
+            background-color: var(--space-light);
+            border: 1px solid var(--neon-purple);
+            border-radius: 15px;
+            padding: 30px;
+            width: 300px;
+            text-align: center;
+            box-shadow: 0 0 20px var(--neon-purple);
+        }
+
+        .login-box h2 {
+            color: var(--neon-blue);
+            margin-bottom: 20px;
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--neon-purple);
+            border-radius: 8px;
+            color: white;
+            font-family: 'Courier New', monospace;
+        }
+
+        .login-box button {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .user-info {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: var(--neon-blue);
+            font-size: 0.9rem;
+        }
+
+        @keyframes glitch {
+            0% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+            20% { clip-path: polygon(0 25%, 100% 25%, 100% 75%, 0 75%); }
+            40% { clip-path: polygon(0 50%, 100% 50%, 100% 100%, 0 100%); }
+            60% { clip-path: polygon(0 0, 100% 0, 100% 60%, 0 60%); }
+            80% { clip-path: polygon(0 70%, 100% 70%, 100% 100%, 0 100%); }
+            100% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+        }
+
+        @media (max-width: 768px) {
+            .columns {
+                flex-direction: column;
+            }
+            .tab-btn {
+                padding: 8px 12px;
+                font-size: 0.8rem;
+            }
+            .user-info {
+                position: static;
+                text-align: center;
+                margin-bottom: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+
+    <!-- Окно регистрации -->
+    <div class="login-overlay" id="loginOverlay">
+        <div class="login-box">
+            <h2>ВХОД</h2>
+            <input type="text" id="userName" placeholder="Твоё имя">
+            <button onclick="login()">Продолжить</button>
+        </div>
+    </div>
+
+    <div class="cyber-container" id="mainContainer" style="display: none;">
+        <div class="user-info" id="userInfo"></div>
+        <h1>ДНЕВНИК ИГРЫ | НАЙТИ СВОИХ</h1>
+        
+        <div class="tabs">
+            <button class="tab-btn active" onclick="openTab('tab1')">Проблема | Инсайт | Потенциал</button>
+            <button class="tab-btn" onclick="openTab('tab2')">КиберДневник</button>
+            <button class="tab-btn" onclick="openTab('tab3')">Падения & Подъёмы</button>
+            <button class="tab-btn" onclick="openTab('tab4')">Отдача Духа</button>
+        </div>
+        
+        <!-- Вкладка 1: Проблема | Инсайт | Потенциал -->
+        <div id="tab1" class="tab-content active">
+            <div class="columns">
+                <div class="column">
+                    <div class="column-title">Проблема</div>
+                    <textarea id="problem" placeholder="Опиши свою проблему..."></textarea>
+                </div>
+                <div class="column">
+                    <div class="column-title">Инсайт</div>
+                    <textarea id="insight" placeholder="Какое озарение?"></textarea>
+                </div>
+                <div class="column">
+                    <div class="column-title">Потенциал</div>
+                    <textarea id="potential" placeholder="Как ты думаешь, что за этим есть?"></textarea>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button id="saveBtn1">Сохранить</button>
+                <button id="clearBtn1" class="delete-btn">Очистить</button>
+            </div>
+            <div class="entries" id="entriesList1"></div>
+        </div>
+        
+        <!-- Вкладка 2: КиберДневник -->
+        <div id="tab2" class="tab-content">
+            <div class="columns">
+                <div class="column">
+                    <div class="column-title">Ситуация</div>
+                    <textarea id="situation" placeholder="Опиши текущую ситуацию..."></textarea>
+                </div>
+                <div class="column">
+                    <div class="column-title">Внутренний голос</div>
+                    <textarea id="innerVoice" placeholder="Что говорит твой внутренний голос?"></textarea>
+                </div>
+                <div class="column">
+                    <div class="column-title">Как я поднимаюсь</div>
+                    <textarea id="riseUp" placeholder="Как я поднимаюсь над страхом?"></textarea>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button id="saveBtn2">Сохранить</button>
+                <button id="clearBtn2" class="delete-btn">Очистить</button>
+            </div>
+            <div class="entries" id="entriesList2"></div>
+        </div>
+        
+        <!-- Вкладка 3: Падения & Подъёмы -->
+        <div id="tab3" class="tab-content">
+            <div class="columns">
+                <div class="column">
+                    <div class="column-title">Падения</div>
+                    <textarea id="falls" placeholder="Где ты споткнулся?"></textarea>
+                </div>
+                <div class="column">
+                    <div class="column-title">Подъёмы</div>
+                    <textarea id="rises" placeholder="Как ты поднялся?"></textarea>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button id="saveBtn3">Сохранить</button>
+                <button id="clearBtn3" class="delete-btn">Очистить</button>
+            </div>
+            <div class="entries" id="entriesList3"></div>
+        </div>
+        
+        <!-- Вкладка 4: Отдача Духа -->
+        <div id="tab4" class="tab-content">
+            <div class="columns">
+                <div class="column">
+                    <div class="column-title">Отдача Духа Жизни</div>
+                    <textarea id="spiritLife" placeholder="Как я сегодня отдал дух жизни?"></textarea>
+                </div>
+                <div class="column">
+                    <div class="column-title">Отдача Духа Игры</div>
+                    <textarea id="spiritGame" placeholder="Как я сегодня отдал дух игры?"></textarea>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button id="saveBtn4">Сохранить</button>
+                <button id="clearBtn4" class="delete-btn">Очистить</button>
+            </div>
+            <div class="entries" id="entriesList4"></div>
+        </div>
+    </div>
+
+    <script>
+        // Создаём звёзды на фоне
+        const starsContainer = document.getElementById('stars');
+        for (let i = 0; i < 200; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.width = `${Math.random() * 3}px`;
+            star.style.height = star.style.width;
+            star.style.left = `${Math.random() * 100}%`;
+            star.style.top = `${Math.random() * 100}%`;
+            star.style.animationDelay = `${Math.random() * 5}s`;
+            starsContainer.appendChild(star);
+        }
+
+        // Регистрация по имени
+        let currentUser = localStorage.getItem('gameDiaryUser') || null;
+        const loginOverlay = document.getElementById('loginOverlay');
+        const mainContainer = document.getElementById('mainContainer');
+        const userInfo = document.getElementById('userInfo');
+
+        function checkLogin() {
+            if (currentUser) {
+                loginOverlay.style.display = 'none';
+                mainContainer.style.display = 'block';
+                userInfo.textContent = `Игрок: ${currentUser}`;
+            } else {
+                loginOverlay.style.display = 'flex';
+                mainContainer.style.display = 'none';
+            }
+        }
+
+        function login() {
+            const userName = document.getElementById('userName').value.trim();
+            if (userName) {
+                currentUser = userName;
+                localStorage.setItem('gameDiaryUser', userName);
+                checkLogin();
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('gameDiaryUser');
+            checkLogin();
+        }
+
+        // Переключение вкладок
+        function openTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        // Логика сохранения для каждой вкладки
+        const tabs = [
+            { 
+                id: '1', 
+                fields: [
+                    {id: 'problem', name: 'Проблема'}, 
+                    {id: 'insight', name: 'Инсайт'}, 
+                    {id: 'potential', name: 'Потенциал'}
+                ], 
+                list: 'entriesList1' 
+            },
+            { 
+                id: '2', 
+                fields: [
+                    {id: 'situation', name: 'Ситуация'}, 
+                    {id: 'innerVoice', name: 'Внутренний голос'}, 
+                    {id: 'riseUp', name: 'Как я поднимаюсь'}
+                ], 
+                list: 'entriesList2' 
+            },
+            { 
+                id: '3', 
+                fields: [
+                    {id: 'falls', name: 'Падения'}, 
+                    {id: 'rises', name: 'Подъёмы'}
+                ], 
+                list: 'entriesList3' 
+            },
+            { 
+                id: '4', 
+                fields: [
+                    {id: 'spiritLife', name: 'Отдача Духа Жизни'}, 
+                    {id: 'spiritGame', name: 'Отдача Духа Игры'}
+                ], 
+                list: 'entriesList4' 
+            }
+        ];
+
+        tabs.forEach(tab => {
+            const saveBtn = document.getElementById(`saveBtn${tab.id}`);
+            const clearBtn = document.getElementById(`clearBtn${tab.id}`);
+            const entriesList = document.getElementById(tab.list);
+            let savedEntries = JSON.parse(localStorage.getItem(`gameDiaryTab${tab.id}_${currentUser}`)) || [];
+
+            // Отображение записей
+            function displayEntries() {
+                entriesList.innerHTML = '';
+                if (savedEntries.length === 0) {
+                    entriesList.innerHTML = '<p style="color: #555; text-align: center;">Здесь будут ваши записи.</p>';
+                    return;
+                }
+                
+                savedEntries.forEach((entry, index) => {
+                    const entryEl = document.createElement('div');
+                    entryEl.className = 'entry';
+                    let entryHTML = `<div class="entry-date">${entry.date || 'БЕЗ ДАТЫ'}</div>`;
+                    
+                    tab.fields.forEach(field => {
+                        entryHTML += `<p><strong>${field.name}:</strong> ${entry[field.id] || '-'}</p>`;
+                    });
+                    
+                    entryHTML += `
+                        <div style="margin-top: 10px;">
+                            <button onclick="editEntry(${index}, ${tab.id})">Редактировать</button>
+                            <button class="delete-btn" onclick="deleteEntry(${index}, ${tab.id})">Удалить</button>
+                        </div>
+                    `;
+                    
+                    entryEl.innerHTML = entryHTML;
+                    entriesList.appendChild(entryEl);
+                });
+            }
+
+            // Сохранение записи
+            saveBtn.addEventListener('click', () => {
+                if (!currentUser) {
+                    alert('Сначала введите ваше имя!');
+                    return;
+                }
+
+                const newEntry = { 
+                    date: new Date().toLocaleString('ru-RU', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    }),
+                    user: currentUser
+                };
+                
+                tab.fields.forEach(field => {
+                    newEntry[field.id] = document.getElementById(field.id).value;
+                });
+                
+                savedEntries.unshift(newEntry);
+                localStorage.setItem(`gameDiaryTab${tab.id}_${currentUser}`, JSON.stringify(savedEntries));
+                
+                // Очистка полей
+                tab.fields.forEach(field => {
+                    document.getElementById(field.id).value = '';
+                });
+                
+                displayEntries();
+            });
+
+            // Очистка полей
+            clearBtn.addEventListener('click', () => {
+                tab.fields.forEach(field => {
+                    document.getElementById(field.id).value = '';
+                });
+            });
+
+            // Глобальные функции для редактирования/удаления
+            window[`editEntry${tab.id}`] = (index) => {
+                const entry = savedEntries[index];
+                tab.fields.forEach(field => {
+                    document.getElementById(field.id).value = entry[field.id] || '';
+                });
+                
+                savedEntries.splice(index, 1);
+                localStorage.setItem(`gameDiaryTab${tab.id}_${currentUser}`, JSON.stringify(savedEntries));
+                displayEntries();
+            };
+
+            window[`deleteEntry${tab.id}`] = (index) => {
+                if (confirm('УДАЛИТЬ ЭТУ ЗАПИСЬ НАВСЕГДА?')) {
+                    savedEntries.splice(index, 1);
+                    localStorage.setItem(`gameDiaryTab${tab.id}_${currentUser}`, JSON.stringify(savedEntries));
+                    displayEntries();
+                }
+            };
+
+            // Первая загрузка
+            checkLogin();
+            if (currentUser) {
+                savedEntries = JSON.parse(localStorage.getItem(`gameDiaryTab${tab.id}_${currentUser}`)) || [];
+                displayEntries();
+            }
+        });
+
+        // Добавляем кнопку выхода
+        const logoutBtn = document.createElement('button');
+        logoutBtn.textContent = 'Выйти';
+        logoutBtn.style.marginLeft = '10px';
+        logoutBtn.style.fontSize = '0.8rem';
+        logoutBtn.onclick = logout;
+        userInfo.appendChild(logoutBtn);
+    </script>
+</body>
+</html>
